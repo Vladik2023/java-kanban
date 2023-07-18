@@ -1,23 +1,23 @@
 package Task;
 
 public class Task {
+
+    protected Integer id;
     protected String name;
     protected String description;
-    protected Integer id;
     protected String status;
+    private static int count = 0;
 
-    public Task(String name, String description, String status) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
-    }
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
-        status = "NEW";
+        this.status = "NEW";
+        this.id = generateId();
     }
 
-
+    public Integer generateId() {
+        return ++count;
+    }
 
     public String getName() {
         return name;
@@ -50,12 +50,13 @@ public class Task {
     public void setStatus(String status) {
         this.status = status;
     }
+
     @Override
     public String toString() {
         return "Task{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", id=" + id +
                 ", status='" + status + '\'' +
                 '}';
     }

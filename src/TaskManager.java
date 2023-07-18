@@ -7,26 +7,28 @@ import java.util.HashMap;
 
 public class TaskManager {
 
-    private  int generateId = 0;
+
 
     private HashMap<Integer, Task> taskStorage = new HashMap<>();
     private HashMap<Integer, Epic> epicStorage = new HashMap<>();
     private HashMap<Integer, SubTask> subTaskStorage = new HashMap<>();
 
     public Task createTask(Task task){
-        int id = generateId();
+        int id = task.generateId();
         task.setId(id);
         taskStorage.put(id, task);
         return task;
     }
+
     public Epic createEpic(Epic epic){
-        int id = generateId();
+        int id = epic.generateId();
         epic.setId(id);
         epicStorage.put(id, epic);
         return epic;
     }
+
     public SubTask createSubTask(SubTask subTask){
-        int id = generateId();
+        int id = subTask.generateId();
         subTask.setId(id);
         subTaskStorage.put(id, subTask);
         ArrayList<Integer> subTaskId = new ArrayList<>(getSubTaskByEpic(subTask.getEpicId()));
@@ -34,6 +36,8 @@ public class TaskManager {
         epicStorage.get(subTask.getEpicId()).setSubTaskId(subTaskId);
         return subTask;
     }
+
+
 
     public ArrayList<Integer> getSubTaskByEpic(int epicId){
         ArrayList<Integer>  result = new ArrayList<>();
@@ -52,9 +56,11 @@ public class TaskManager {
     public ArrayList<Task> getAllTasks(){
         return new ArrayList(taskStorage.values());
     }
+
     public ArrayList<Epic> getAllEpic(){
         return new ArrayList(epicStorage.values());
     }
+
     public ArrayList<SubTask> getAllSubTask(){
         return new ArrayList(subTaskStorage.values());
     }
@@ -66,6 +72,7 @@ public class TaskManager {
         }
         taskStorage.put(task.getId(), task);
     }
+
     public void updateEpic(Epic epic){
         Epic saved = epicStorage.get(epic.getId());
         if (saved == null){
@@ -74,6 +81,7 @@ public class TaskManager {
         saved.setName(epic.getName());
         saved.setDescription(epic.getDescription());
     }
+
     public void updateSubTask(SubTask subTask){
         Task saved = subTaskStorage.get(subTask.getId());
         if (saved == null){
@@ -84,7 +92,7 @@ public class TaskManager {
 
     }
 
-    public String checkStatusEpic(int id){
+    private String checkStatusEpic(int id){
         boolean isNew = false;
         boolean isDone = false;
         for (Integer subTaskId : getSubTaskByEpic(id)) {
@@ -125,13 +133,16 @@ public class TaskManager {
         epicStorage.get(subTask.getEpicId()).setSubTaskId(subTaskId);
         epicStorage.get(subTask.getEpicId()).setStatus(checkStatusEpic(subTask.getEpicId()));
     }
+
     public void deleteAllTask(){
         taskStorage.clear();
     }
+
     public void deleteAllEpic(){
         epicStorage.clear();
         subTaskStorage.clear();
     }
+
     public void deleteAllSubTask(){
         subTaskStorage.clear();
         for (Epic value : epicStorage.values()) {
@@ -141,8 +152,4 @@ public class TaskManager {
     }
 
 
-
-    private  int generateId(){
-        return ++generateId;
-    }
 }
