@@ -14,21 +14,21 @@ public class TaskManager {
     private HashMap<Integer, SubTask> subTaskStorage = new HashMap<>();
 
     public Task createTask(Task task){
-        int id = task.generateId();
+        int id = task.getId();
         task.setId(id);
         taskStorage.put(id, task);
         return task;
     }
 
     public Epic createEpic(Epic epic){
-        int id = epic.generateId();
+        int id = epic.getId();
         epic.setId(id);
         epicStorage.put(id, epic);
         return epic;
     }
 
     public SubTask createSubTask(SubTask subTask){
-        int id = subTask.generateId();
+        int id = subTask.getId();
         subTask.setId(id);
         subTaskStorage.put(id, subTask);
         ArrayList<Integer> subTaskId = new ArrayList<>(getSubTaskByEpic(subTask.getEpicId()));

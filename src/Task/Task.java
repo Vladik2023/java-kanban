@@ -15,7 +15,7 @@ public class Task {
         this.id = generateId();
     }
 
-    public Integer generateId() {
+    private Integer generateId() {
         return ++count;
     }
 
