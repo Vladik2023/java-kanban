@@ -130,8 +130,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-    @Override
-    public String checkStatusEpic(int id){
+
+    private String checkStatusEpic(int id){
         boolean isNew = false;
         boolean isDone = false;
         for (Integer subTaskId : getSubTaskByEpic(id)) {
