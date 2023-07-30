@@ -1,13 +1,15 @@
+import Service.HistoryManager;
+import Service.Manager;
+import Service.TaskManager;
 import Task.Task;
 import Task.Epic;
 import Task.SubTask;
 
-import java.util.ArrayList;
-
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = Manager.getTaskDefault();
+        HistoryManager historyManager = Manager.getHistoryDefault();
 
         Task task1 = new Task("задача 1", "Описание 1");
         taskManager.createTask(task1);
@@ -44,5 +46,6 @@ public class Main {
         System.out.println(taskManager.getAllTasks());
         System.out.println(taskManager.getAllEpic());
         System.out.println(taskManager.getAllSubTask());
+        taskManager.getHistory();
     }
 }
