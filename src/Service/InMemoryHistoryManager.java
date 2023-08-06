@@ -6,11 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    //private static final int HISTORY_SIZE = 10;
-    //private final LinkedList<Task> history = new LinkedList<>();
+    private static final int HISTORY_SIZE = 10;
+    /*
+    Обратите пожалуйста на то как у меня реализованно добавление задач в историю просмотра,
+    они добовляются когда использую метод get в InMemoryTaskManager, но есть проблема которую вы не заметили сразу,
+    при создании саб тасков я так же использую метод get, от чего они автоматически добовляютсяв историю просмотров,
+    а так не должно быть. У меня не получается исправить это. Выделите проблемные места пожалуйста и как это исправить.
+    */
+
     private CustomLinkedList taskList = new CustomLinkedList();
     private HashMap<Integer, CustomLinkedList.Node> taskMap = new HashMap<>();
-
 
     @Override
     public List<Task> getHistory() {
@@ -24,7 +29,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             CustomLinkedList.Node node = taskMap.get(taskId);
             removeNode(node);
         }
-        CustomLinkedList.Node newNode = taskList.linkLast(task);
+        CustomLinkedList.Node newNode = taskList.linkFirst(task);
         taskMap.put(taskId, newNode);
     }
 
@@ -52,21 +57,25 @@ public class InMemoryHistoryManager implements HistoryManager {
             removeNode(node);
             taskMap.remove(id);
         }
+
     }
 
     private class CustomLinkedList {
         private Node first;
         private Node last;
+        private int size;
 
-        public Node linkLast(Task task) {
+        public Node linkFirst(Task task) {
             Node newNode = new Node(task);
-            if (last == null) {
-                first = newNode;
+            if (first == null) {
+                last = newNode;
             } else {
-                last.next = newNode;
-                newNode.prev = last;
+                first.prev = newNode;
+                newNode.next = first;
             }
-            last = newNode;
+            first = newNode;
+            increaseSize(); // Увеличить значение size
+            trimToSize(); // Обрезать список до HISTORY_SIZE
             return newNode;
         }
 
@@ -78,6 +87,23 @@ public class InMemoryHistoryManager implements HistoryManager {
                 current = current.next;
             }
             return tasks;
+        }
+        private void increaseSize() {
+            size++;
+        }
+
+        private void trimToSize() {
+            if (size > HISTORY_SIZE) {
+                Node current = last;
+                for (int i = 0; i < size - HISTORY_SIZE; i++) {
+                    Node prev = current.prev;
+                    prev.next = null;
+                    current.prev = null;
+                    current = prev;
+                }
+                last = current;
+                size = HISTORY_SIZE;
+            }
         }
 
         private class Node {

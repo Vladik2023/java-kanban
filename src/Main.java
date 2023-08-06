@@ -1,4 +1,5 @@
 import Service.HistoryManager;
+import Service.InMemoryHistoryManager;
 import Service.Manager;
 import Service.TaskManager;
 import Task.Task;
@@ -30,19 +31,18 @@ public class Main {
         SubTask subTask3 = new SubTask("Саб таск 3", "Саб таск 3", epic1.getId());
         taskManager.createSubTask(subTask3);
 
-        taskManager.getTaskById(task2.getId());
-        taskManager.getEpicById(epic1.getId());
-        taskManager.getTaskById(task2.getId());
-        taskManager.getSubTaskById(subTask3.getId());
-        taskManager.getSubTaskById(subTask1.getId());
-        taskManager.getEpicById(epic2.getId());
-        taskManager.getTaskById(task2.getId());
-        taskManager.getSubTaskById(subTask1.getId());
+//        taskManager.getTaskById(task1.getId());
+//        taskManager.getEpicById(epic1.getId());
+//        taskManager.getSubTaskById(subTask3.getId());
+//        taskManager.getSubTaskById(subTask1.getId());
+//        taskManager.getEpicById(epic2.getId());
+//        taskManager.getTaskById(task2.getId());
+//        taskManager.getSubTaskById(subTask1.getId());
         System.out.println(taskManager.getHistory() + "\n");
-        taskManager.deleteTaskById(task2.getId());
-        System.out.println(taskManager.getHistory() + "\n");
-        taskManager.deleteEpicById(epic1.getId());
-        System.out.println(taskManager.getHistory() + "\n");
+//        taskManager.deleteTaskById(task2.getId());
+//        System.out.println(taskManager.getHistory() + "\n");
+//        taskManager.deleteEpicById(epic1.getId());
+//        System.out.println(taskManager.getHistory() + "\n");
 
     }
 }
