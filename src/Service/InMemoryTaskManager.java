@@ -155,6 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTaskById(int id){
         taskStorage.remove(id);
+        historyManager.remove(id);
     }
 
     @Override
@@ -163,14 +164,17 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Integer> removeSubTask = new ArrayList<>(epicStorage.get(id).getSubTaskId());
         for (Integer subTaskId : removeSubTask) {
             subTaskStorage.remove(subTaskId);
+            historyManager.remove(subTaskId);
         }
         epicStorage.remove(id);
+        historyManager.remove(id);
     }
 
     @Override
     public void deleteSubTaskById(int id){
         SubTask subTask = subTaskStorage.get(id);
         subTaskStorage.remove(id);
+        historyManager.remove(id);
         ArrayList<Integer> subTaskId = new ArrayList<>(getSubTaskByEpic(subTask.getEpicId()));
         epicStorage.get(subTask.getEpicId()).setSubTaskId(subTaskId);
         epicStorage.get(subTask.getEpicId()).setStatus(checkStatusEpic(subTask.getEpicId()));
@@ -178,17 +182,29 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTask(){
+        for (Integer id : taskStorage.keySet()) {
+            historyManager.remove(id);
+        }
         taskStorage.clear();
     }
 
     @Override
     public void deleteAllEpic(){
+        for (Integer id : epicStorage.keySet()) {
+            historyManager.remove(id);
+        }
+        for (Integer id : subTaskStorage.keySet()) {
+            historyManager.remove(id);
+        }
         epicStorage.clear();
         subTaskStorage.clear();
     }
 
     @Override
     public void deleteAllSubTask(){
+        for (Integer id : subTaskStorage.keySet()) {
+            historyManager.remove(id);
+        }
         subTaskStorage.clear();
         for (Epic value : epicStorage.values()) {
             value.setSubTaskId(null);

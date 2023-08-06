@@ -23,28 +23,26 @@ public class Main {
 
         SubTask subTask1 = new SubTask("Саб таск 1", "Саб таск 1", epic1.getId());
         taskManager.createSubTask(subTask1);
+
         SubTask subTask2 = new SubTask("Саб таск 2", "Саб таск 2", epic1.getId());
         taskManager.createSubTask(subTask2);
 
-        SubTask subTask3 = new SubTask("Саб таск 3", "Саб таск 3", epic2.getId());
+        SubTask subTask3 = new SubTask("Саб таск 3", "Саб таск 3", epic1.getId());
         taskManager.createSubTask(subTask3);
 
-        System.out.println(taskManager.getAllTasks());
-        System.out.println(taskManager.getAllEpic());
-        System.out.println(taskManager.getAllSubTask());
-
-        task1.setStatus("IN_PROGRESS");
-        task2.setStatus("DONE");
-        subTask1.setStatus("DONE");
-        subTask3.setStatus("DONE");
-
-        taskManager.deleteTaskById(task1.getId());
+        taskManager.getTaskById(task2.getId());
+        taskManager.getEpicById(epic1.getId());
+        taskManager.getTaskById(task2.getId());
+        taskManager.getSubTaskById(subTask3.getId());
+        taskManager.getSubTaskById(subTask1.getId());
+        taskManager.getEpicById(epic2.getId());
+        taskManager.getTaskById(task2.getId());
+        taskManager.getSubTaskById(subTask1.getId());
+        System.out.println(taskManager.getHistory() + "\n");
+        taskManager.deleteTaskById(task2.getId());
+        System.out.println(taskManager.getHistory() + "\n");
         taskManager.deleteEpicById(epic1.getId());
+        System.out.println(taskManager.getHistory() + "\n");
 
-        System.out.println();
-        System.out.println(taskManager.getAllTasks());
-        System.out.println(taskManager.getAllEpic());
-        System.out.println(taskManager.getAllSubTask());
-        taskManager.getHistory();
     }
 }
