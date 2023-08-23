@@ -10,10 +10,10 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private HashMap<Integer, Task> taskStorage = new HashMap<>();
-    private HashMap<Integer, Epic> epicStorage = new HashMap<>();
-    private HashMap<Integer, SubTask> subTaskStorage = new HashMap<>();
-    private final InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    protected HashMap<Integer, Task> taskStorage = new HashMap<>();
+    protected HashMap<Integer, Epic> epicStorage = new HashMap<>();
+    protected HashMap<Integer, SubTask> subTaskStorage = new HashMap<>();
+    protected final InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
     @Override
     public Task createTask(Task task){
         int id = task.getId();
@@ -54,9 +54,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTaskById(int id){
-        historyManager.addTask(taskStorage.get(id));
-        return taskStorage.get(id);
+    public Task getTaskById(int id) {
+        Task task = taskStorage.get(id);
+        if (task != null) {
+            historyManager.addTask(task);
+        }
+        return task;
     }
 
     @Override

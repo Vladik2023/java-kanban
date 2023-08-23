@@ -1,5 +1,7 @@
 package Task;
 
+import Service.TaskType;
+
 public class SubTask extends Task {
 
     private int epicId;
@@ -7,6 +9,7 @@ public class SubTask extends Task {
     public SubTask(String name, String description,Integer epicId) {
         super(name, description);
         this.epicId = epicId;
+        this.type = TaskType.SUBTASK;
     }
 
     public int getEpicId() {

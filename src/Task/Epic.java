@@ -1,4 +1,5 @@
 package Task;
+import Service.TaskType;
 import Task.SubTask;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ public class Epic extends Task {
 
     public Epic(String name, String description) {
         super(name, description);
-
+        this.type = TaskType.EPIC;
     }
 
     public ArrayList<Integer> getSubTaskId() {

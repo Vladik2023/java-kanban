@@ -1,18 +1,27 @@
 package Task;
 
+import Service.TaskType;
+
 public class Task {
 
     protected Integer id;
     protected String name;
     protected String description;
     protected String status;
+    protected TaskType type;
     private static int count = 0;
+
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
         this.status = "NEW";
         this.id = generateId();
+        this.type = TaskType.TASK;
+    }
+
+    public TaskType getType() {
+        return type;
     }
 
     private Integer generateId() {
