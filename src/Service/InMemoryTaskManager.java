@@ -13,7 +13,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected HashMap<Integer, Task> taskStorage = new HashMap<>();
     protected HashMap<Integer, Epic> epicStorage = new HashMap<>();
     protected HashMap<Integer, SubTask> subTaskStorage = new HashMap<>();
-    protected final InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    protected InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
     @Override
     public Task createTask(Task task){
         int id = task.getId();
@@ -32,12 +32,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask createSubTask(SubTask subTask){
-        int id = subTask.getId();
-        subTask.setId(id);
-        subTaskStorage.put(id, subTask);
-        ArrayList<Integer> subTaskId = new ArrayList<>(getSubTaskByEpic(subTask.getEpicId()));
-
-        epicStorage.get(subTask.getEpicId()).setSubTaskId(subTaskId);
+        subTaskStorage.put(subTask.getId(), subTask);
+        Epic epic = epicStorage.get(subTask.getEpicId());
+        epic.addSubtaskId(subTask.getId());
         return subTask;
     }
 

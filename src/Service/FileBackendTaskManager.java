@@ -17,35 +17,39 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
         this.file = file;
     }
 
-    public void save(){
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-
+    private void save() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(handler.getHeader());
             writer.newLine();
-            
-            for(Task task: taskStorage.values()) {
+
+            for (Task task : taskStorage.values()) {
                 writer.write(handler.toString(task));
                 writer.newLine();
             }
-            for(Epic epic: epicStorage.values()) {
+            for (Epic epic : epicStorage.values()) {
                 writer.write(handler.toString(epic));
                 writer.newLine();
             }
-            for(SubTask subTask: subTaskStorage.values()) {
+            for (SubTask subTask : subTaskStorage.values()) {
                 writer.write(handler.toString(subTask));
                 writer.newLine();
             }
 
             writer.newLine();
-            writer.write(handler.historyToString(historyManager));
+            List<Integer> history = new ArrayList<>();
+            for (Task task : historyManager.getHistory()) {
+                history.add(task.getId());
+            }
+            writer.write(CSVFormatHandler.historyToString(history));
 
-        }catch (IOException exception){
+        } catch (IOException exception) {
             throw new IllegalArgumentException("Файл не сохранен!");
         }
     }
 
-    static FileBackendTaskManager loadFromFile(File file) {
+    public static FileBackendTaskManager loadFromFile(File file) {
         FileBackendTaskManager taskManager = new FileBackendTaskManager(file);
+
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -65,12 +69,17 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
 
 
             List<Integer> history = CSVFormatHandler.historyFromString(reader.readLine());
+
             taskManager.addHistoryToManager(history);
         } catch (IOException exception) {
             throw new IllegalArgumentException("Ошибка при чтении файла: " + file.getName());
         }
 
         return taskManager;
+    }
+
+    private void setHistoryManager(InMemoryHistoryManager historyManager){
+        this.historyManager = historyManager;
     }
 
     private void addTaskToStorage(Task task) {
@@ -233,57 +242,75 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
 
     public static void main(String[] args) {
         // Создание и добавление задач, эпиков и подзадач
-        Task task1 = new Task("Задача 1", "Описание задачи 1");
-        Task task2 = new Task("Задача 2", "Описание задачи 2");
-        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
-        SubTask subTask1 = new SubTask("Подзадача 1", "Описание подзадачи 1", epic1.getId());
-        SubTask subTask2 = new SubTask("Подзадача 2", "Описание подзадачи 2", epic1.getId());
-
-        File file = new File("tasks.csv");
-
-        // Создание и сохранение менеджера в файл
-        FileBackendTaskManager taskManager1 = new FileBackendTaskManager(file);
-        taskManager1.createTask(task1);
-        taskManager1.createTask(task2);
-        taskManager1.createEpic(epic1);
-        taskManager1.createSubTask(subTask1);
-        taskManager1.createSubTask(subTask2);
-        taskManager1.getTaskById(task1.getId());
-        taskManager1.getEpicById(epic1.getId());
-        taskManager1.getSubTaskById(subTask1.getId());
-        taskManager1.getSubTaskById(subTask2.getId());
-
-        // Загрузка менеджера из файла
-        FileBackendTaskManager taskManager2 = FileBackendTaskManager.loadFromFile(file);
-
-        // Проверка восстановленных данных
-        List<Task> history1 = taskManager1.getHistory();
-        List<Task> history2 = taskManager2.getHistory();
-
-        System.out.println("История просмотра в менеджере 1:");
-        for (Task task : history1) {
-            System.out.println(task);
-        }
-
-        System.out.println("История просмотра в менеджере 2:");
-        for (Task task : history2) {
-            System.out.println(task);
-        }
-
-        // Проверка наличия задач, эпиков и подзадач в менеджере 2
-        System.out.println("Задачи в менеджере 2:");
-        for (Task task : taskManager2.getAllTasks()) {
-            System.out.println(task);
-        }
-
-        System.out.println("Эпики в менеджере 2:");
-        for (Epic epic : taskManager2.getAllEpic()) {
-            System.out.println(epic);
-        }
-
-        System.out.println("Подзадачи в менеджере 2:");
-        for (SubTask subTask : taskManager2.getAllSubTask()) {
-            System.out.println(subTask);
-        }
+//        Task task1 = new Task("Задача 1", "Описание задачи 1");
+//        Task task2 = new Task("Задача 2", "Описание задачи 2");
+//        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
+//        SubTask subTask1 = new SubTask("Подзадача 1", "Описание подзадачи 1", epic1.getId());
+//        SubTask subTask2 = new SubTask("Подзадача 2", "Описание подзадачи 2", epic1.getId());
+//
+//        File file = new File("tasks2.csv");
+//
+//        // Создание и сохранение менеджера в файл
+//        FileBackendTaskManager taskManager1 = new FileBackendTaskManager(file);
+//        taskManager1.createTask(task1);
+//        taskManager1.createTask(task2);
+//        taskManager1.createEpic(epic1);
+//        taskManager1.createSubTask(subTask1);
+//        taskManager1.createSubTask(subTask2);
+//        taskManager1.getTaskById(task1.getId());
+//        taskManager1.getEpicById(epic1.getId());
+//        //taskManager1.getSubTaskById(subTask1.getId());
+//        //taskManager1.getSubTaskById(subTask2.getId());
+//
+//        // Загрузка менеджера из файла
+//        FileBackendTaskManager taskManager2 = FileBackendTaskManager.loadFromFile(file);
+//
+//        // Проверка восстановленных данных
+//        List<Task> history1 = taskManager1.getHistory();
+//        List<Task> history2 = taskManager2.getHistory();
+//
+//        System.out.println("История просмотра в менеджере 1:");
+//
+//            System.out.println(history1);
+//
+//
+//        System.out.println("История просмотра в менеджере 2:");
+//
+//            System.out.println(history2);
+//
+//
+//        // Проверка наличия задач, эпиков и подзадач в менеджере 2
+//        System.out.println("Задачи в менеджере 2:");
+//        for (Task task : taskManager2.getAllTasks()) {
+//            System.out.println(task);
+//        }
+//
+//        System.out.println("Эпики в менеджере 2:");
+//        for (Epic epic : taskManager2.getAllEpic()) {
+//            System.out.println(epic);
+//        }
+//
+//        System.out.println("Подзадачи в менеджере 2:");
+//        for (SubTask subTask : taskManager2.getAllSubTask()) {
+//            System.out.println(subTask);
+//        }
+        FileBackendTaskManager fileManager = new FileBackendTaskManager(new File("saveTasks2.csv"));
+        fileManager.createTask(new Task("task1", "Купить автомобиль"));
+        fileManager.createEpic(new Epic("new Epic1", "Новый Эпик"));
+        fileManager.createSubTask(new SubTask("New Subtask", "Подзадача", 2));
+        fileManager.createSubTask(new SubTask("New Subtask2", "Подзадача2", 2));
+        fileManager.getTaskById(1);
+        fileManager.getEpicById(2);
+        fileManager.getSubTaskById(3);
+        System.out.println(fileManager.getAllTasks());
+        System.out.println(fileManager.getAllEpic());
+        System.out.println(fileManager.getAllSubTask());
+        System.out.println("История просмотров" + fileManager.getHistory());
+        System.out.println("\n\n" + "new" + "\n\n");
+        FileBackendTaskManager fileBackedTasksManager = loadFromFile(new File("saveTasks2.csv"));
+        System.out.println(fileManager.getAllTasks());
+        System.out.println(fileManager.getAllEpic());
+        System.out.println(fileManager.getAllSubTask());
+        System.out.println("История просмотров" + fileBackedTasksManager.getHistory());
     }
 }
