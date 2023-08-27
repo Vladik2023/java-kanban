@@ -18,13 +18,15 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void addTask(Task task) {
-        int taskId = task.getId();
-        if (taskMap.containsKey(taskId)) {
-            CustomLinkedList.Node node = taskMap.get(taskId);
-            removeNode(node);
+        if (task != null) {
+            int taskId = task.getId();
+            if (taskMap.containsKey(taskId)) {
+                CustomLinkedList.Node node = taskMap.get(taskId);
+                removeNode(node);
+            }
+            CustomLinkedList.Node newNode = taskList.linkFirst(task);
+            taskMap.put(taskId, newNode);
         }
-        CustomLinkedList.Node newNode = taskList.linkFirst(task);
-        taskMap.put(taskId, newNode);
     }
 
     private void removeNode(CustomLinkedList.Node node) {

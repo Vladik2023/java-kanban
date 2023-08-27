@@ -6,6 +6,7 @@ import Task.SubTask;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +51,6 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
     public static FileBackendTaskManager loadFromFile(File file) {
         FileBackendTaskManager taskManager = new FileBackendTaskManager(file);
 
-
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             boolean isHeaderSkipped = false;
@@ -67,19 +67,14 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
                 }
             }
 
-
             List<Integer> history = CSVFormatHandler.historyFromString(reader.readLine());
-
+            Collections.reverse(history);
             taskManager.addHistoryToManager(history);
         } catch (IOException exception) {
             throw new IllegalArgumentException("Ошибка при чтении файла: " + file.getName());
         }
 
         return taskManager;
-    }
-
-    private void setHistoryManager(InMemoryHistoryManager historyManager){
-        this.historyManager = historyManager;
     }
 
     private void addTaskToStorage(Task task) {
@@ -104,6 +99,14 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
             Task task = getTaskById(taskId);
             if (task != null) {
                 historyManager.addTask(task);
+            }
+            Task epic = getEpicById(taskId);
+            if (epic != null) {
+                historyManager.addTask(epic);
+            }
+            Task subTask = getSubTaskById(taskId);
+            if (subTask != null) {
+                historyManager.addTask(subTask);
             }
         }
     }
@@ -302,15 +305,15 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
         fileManager.getTaskById(1);
         fileManager.getEpicById(2);
         fileManager.getSubTaskById(3);
-        System.out.println(fileManager.getAllTasks());
-        System.out.println(fileManager.getAllEpic());
-        System.out.println(fileManager.getAllSubTask());
+//        System.out.println(fileManager.getAllTasks());
+//        System.out.println(fileManager.getAllEpic());
+//        System.out.println(fileManager.getAllSubTask());
         System.out.println("История просмотров" + fileManager.getHistory());
         System.out.println("\n\n" + "new" + "\n\n");
         FileBackendTaskManager fileBackedTasksManager = loadFromFile(new File("saveTasks2.csv"));
-        System.out.println(fileManager.getAllTasks());
-        System.out.println(fileManager.getAllEpic());
-        System.out.println(fileManager.getAllSubTask());
+//        System.out.println(fileManager.getAllTasks());
+//        System.out.println(fileManager.getAllEpic());
+//        System.out.println(fileManager.getAllSubTask());
         System.out.println("История просмотров" + fileBackedTasksManager.getHistory());
     }
 }
