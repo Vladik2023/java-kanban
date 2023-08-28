@@ -66,8 +66,6 @@ public class CSVFormatHandler {
                 int taskId = Integer.parseInt(part);
                 result.add(taskId);
             } catch (NumberFormatException e) {
-                // Обработка ошибки преобразования строки в число
-                // Можно выбросить исключение или выполнить другие действия по вашему усмотрению
             }
         }
 

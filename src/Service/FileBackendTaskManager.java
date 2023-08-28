@@ -12,7 +12,6 @@ import java.util.Map;
 
 public class FileBackendTaskManager extends InMemoryTaskManager{
     private File file;
-    private CSVFormatHandler handler= new CSVFormatHandler();
 
     public FileBackendTaskManager(File file) {
         this.file = file;
@@ -20,19 +19,19 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
 
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write(handler.getHeader());
+            writer.write(CSVFormatHandler.getHeader());
             writer.newLine();
 
             for (Task task : taskStorage.values()) {
-                writer.write(handler.toString(task));
+                writer.write(CSVFormatHandler.toString(task));
                 writer.newLine();
             }
             for (Epic epic : epicStorage.values()) {
-                writer.write(handler.toString(epic));
+                writer.write(CSVFormatHandler.toString(epic));
                 writer.newLine();
             }
             for (SubTask subTask : subTaskStorage.values()) {
-                writer.write(handler.toString(subTask));
+                writer.write(CSVFormatHandler.toString(subTask));
                 writer.newLine();
             }
 
@@ -55,6 +54,7 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
             String line;
             boolean isHeaderSkipped = false;
             while ((line = reader.readLine()) != null) {
+
                 if (!line.isEmpty()) {
                     if (!isHeaderSkipped) {
                         isHeaderSkipped = true;
@@ -62,6 +62,13 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
                     }
                     Task task = CSVFormatHandler.fromString(line);
                     taskManager.addTaskToStorage(task);
+                    if (task instanceof SubTask) {
+                        SubTask subTask = (SubTask) task;
+                        Epic epic = (Epic) taskManager.getEpicById(subTask.getEpicId());
+                        if (epic != null) {
+                            epic.addSubtaskId(subTask.getId());
+                        }
+                    }
                 } else {
                     break;
                 }
@@ -163,21 +170,18 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
     @Override
     public ArrayList<Task> getAllTasks() {
         ArrayList<Task> result = super.getAllTasks();
-        save();
         return result;
     }
 
     @Override
     public ArrayList<Epic> getAllEpic() {
         ArrayList<Epic> result = super.getAllEpic();
-        save();
         return result;
     }
 
     @Override
     public ArrayList<SubTask> getAllSubTask() {
         ArrayList<SubTask> result = super.getAllSubTask();
-        save();
         return result;
     }
 
@@ -242,61 +246,7 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
         save();
     }
 
-
     public static void main(String[] args) {
-        // Создание и добавление задач, эпиков и подзадач
-//        Task task1 = new Task("Задача 1", "Описание задачи 1");
-//        Task task2 = new Task("Задача 2", "Описание задачи 2");
-//        Epic epic1 = new Epic("Эпик 1", "Описание эпика 1");
-//        SubTask subTask1 = new SubTask("Подзадача 1", "Описание подзадачи 1", epic1.getId());
-//        SubTask subTask2 = new SubTask("Подзадача 2", "Описание подзадачи 2", epic1.getId());
-//
-//        File file = new File("tasks2.csv");
-//
-//        // Создание и сохранение менеджера в файл
-//        FileBackendTaskManager taskManager1 = new FileBackendTaskManager(file);
-//        taskManager1.createTask(task1);
-//        taskManager1.createTask(task2);
-//        taskManager1.createEpic(epic1);
-//        taskManager1.createSubTask(subTask1);
-//        taskManager1.createSubTask(subTask2);
-//        taskManager1.getTaskById(task1.getId());
-//        taskManager1.getEpicById(epic1.getId());
-//        //taskManager1.getSubTaskById(subTask1.getId());
-//        //taskManager1.getSubTaskById(subTask2.getId());
-//
-//        // Загрузка менеджера из файла
-//        FileBackendTaskManager taskManager2 = FileBackendTaskManager.loadFromFile(file);
-//
-//        // Проверка восстановленных данных
-//        List<Task> history1 = taskManager1.getHistory();
-//        List<Task> history2 = taskManager2.getHistory();
-//
-//        System.out.println("История просмотра в менеджере 1:");
-//
-//            System.out.println(history1);
-//
-//
-//        System.out.println("История просмотра в менеджере 2:");
-//
-//            System.out.println(history2);
-//
-//
-//        // Проверка наличия задач, эпиков и подзадач в менеджере 2
-//        System.out.println("Задачи в менеджере 2:");
-//        for (Task task : taskManager2.getAllTasks()) {
-//            System.out.println(task);
-//        }
-//
-//        System.out.println("Эпики в менеджере 2:");
-//        for (Epic epic : taskManager2.getAllEpic()) {
-//            System.out.println(epic);
-//        }
-//
-//        System.out.println("Подзадачи в менеджере 2:");
-//        for (SubTask subTask : taskManager2.getAllSubTask()) {
-//            System.out.println(subTask);
-//        }
         FileBackendTaskManager fileManager = new FileBackendTaskManager(new File("saveTasks2.csv"));
         fileManager.createTask(new Task("task1", "Купить автомобиль"));
         fileManager.createEpic(new Epic("new Epic1", "Новый Эпик"));
