@@ -168,24 +168,6 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
     }
 
     @Override
-    public ArrayList<Task> getAllTasks() {
-        ArrayList<Task> result = super.getAllTasks();
-        return result;
-    }
-
-    @Override
-    public ArrayList<Epic> getAllEpic() {
-        ArrayList<Epic> result = super.getAllEpic();
-        return result;
-    }
-
-    @Override
-    public ArrayList<SubTask> getAllSubTask() {
-        ArrayList<SubTask> result = super.getAllSubTask();
-        return result;
-    }
-
-    @Override
     public List<Task> getHistory() {
         List<Task> result = super.getHistory();
         save();
