@@ -1,7 +1,7 @@
-package Service;
-import Task.Task;
-import Task.Epic;
-import Task.SubTask;
+package service;
+import task.Task;
+import task.Epic;
+import task.SubTask;
 
 import java.util.ArrayList;
 import java.util.List;

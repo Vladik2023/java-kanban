@@ -1,5 +1,5 @@
-package Service;
-import Task.Task;
+package service;
+import task.Task;
 import java.util.List;
 public interface HistoryManager {
     List<Task> getHistory();

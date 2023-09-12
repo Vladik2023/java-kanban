@@ -1,14 +1,13 @@
-package Service;
+package service;
 
-import Task.Task;
-import Task.Epic;
-import Task.SubTask;
+import task.Task;
+import task.Epic;
+import task.SubTask;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class FileBackendTaskManager extends InMemoryTaskManager{
     private File file;
@@ -17,7 +16,7 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
         this.file = file;
     }
 
-    private void save() {
+    public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(CSVFormatHandler.getHeader());
             writer.newLine();
@@ -74,9 +73,12 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
                 }
             }
 
-            List<Integer> history = CSVFormatHandler.historyFromString(reader.readLine());
-            Collections.reverse(history);
-            taskManager.addHistoryToManager(history);
+            String historyLine = reader.readLine();
+            if (historyLine != null) {
+                List<Integer> history = CSVFormatHandler.historyFromString(historyLine);
+                Collections.reverse(history);
+                taskManager.addHistoryToManager(history);
+            }
         } catch (IOException exception) {
             throw new IllegalArgumentException("Ошибка при чтении файла: " + file.getName());
         }

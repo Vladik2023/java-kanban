@@ -1,12 +1,10 @@
-package Service;
+package service;
 
-import Task.Task;
-import Task.Epic;
-import Task.SubTask;
+import task.Task;
+import task.Epic;
+import task.SubTask;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -14,11 +12,20 @@ public class InMemoryTaskManager implements TaskManager {
     protected HashMap<Integer, Epic> epicStorage = new HashMap<>();
     protected HashMap<Integer, SubTask> subTaskStorage = new HashMap<>();
     protected InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    protected TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+            Comparator.nullsLast(Comparator.naturalOrder())));
+
     @Override
     public Task createTask(Task task){
+        for (Task existingTask : prioritizedTasks) {
+            if (isTaskIntersecting(existingTask, task)) {
+                throw new IllegalArgumentException("Задача пересекается с другой задачей: " + existingTask.getName());
+            }
+        }
         int id = task.getId();
         task.setId(id);
         taskStorage.put(id, task);
+        prioritizedTasks.add(task);
         return task;
     }
 
@@ -27,14 +34,21 @@ public class InMemoryTaskManager implements TaskManager {
         int id = epic.getId();
         epic.setId(id);
         epicStorage.put(id, epic);
+        prioritizedTasks.add(epic);
         return epic;
     }
 
     @Override
     public SubTask createSubTask(SubTask subTask){
+        for (Task existingTask : prioritizedTasks) {
+            if (isTaskIntersecting(existingTask, subTask)) {
+                throw new IllegalArgumentException("Подзадача пересекается с другой задачей: " + existingTask.getName());
+            }
+        }
         subTaskStorage.put(subTask.getId(), subTask);
         Epic epic = epicStorage.get(subTask.getEpicId());
         epic.addSubtaskId(subTask.getId());
+        prioritizedTasks.add(subTask);
         return subTask;
     }
 
@@ -93,11 +107,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task){
+        for (Task existingTask : prioritizedTasks) {
+            if (!existingTask.equals(task) && isTaskIntersecting(existingTask, task)) {
+                throw new IllegalArgumentException("Задача пересекается с другой задачей: " + existingTask.getName());
+            }
+        }
         Task saved = taskStorage.get(task.getId());
         if (saved == null){
             return;
         }
         taskStorage.put(task.getId(), task);
+        prioritizedTasks.remove(saved);
+        prioritizedTasks.add(task);
     }
 
     @Override
@@ -108,19 +129,35 @@ public class InMemoryTaskManager implements TaskManager {
         }
         saved.setName(epic.getName());
         saved.setDescription(epic.getDescription());
+        prioritizedTasks.remove(saved);
+        prioritizedTasks.add(epic);
     }
 
     @Override
     public void updateSubTask(SubTask subTask){
+        for (Task existingTask : prioritizedTasks) {
+            if (!existingTask.equals(subTask) && isTaskIntersecting(existingTask, subTask)) {
+                throw new IllegalArgumentException("Подзадача пересекается с другой задачей: " + existingTask.getName());
+            }
+        }
         Task saved = subTaskStorage.get(subTask.getId());
         if (saved == null){
             return;
         }
         subTaskStorage.put(subTask.getId(), subTask);
         epicStorage.get(subTask.getEpicId()).setStatus(checkStatusEpic(subTask.getEpicId()));
-
+        prioritizedTasks.remove(saved);
+        prioritizedTasks.add(subTask);
     }
+    private boolean isTaskIntersecting(Task task1, Task task2) {
+        Date startTime1 = task1.getStartTime();
+        Date endTime1 = task1.getEndTime();
+        Date startTime2 = task2.getStartTime();
+        Date endTime2 = task2.getEndTime();
 
+        return startTime1 != null && startTime2 != null && endTime1 != null && endTime2 != null &&
+                startTime1.before(endTime2) && endTime1.after(startTime2);
+    }
 
     private String checkStatusEpic(int id){
         boolean isNew = false;
@@ -203,5 +240,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
+    }
 }

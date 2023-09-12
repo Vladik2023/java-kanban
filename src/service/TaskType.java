@@ -1,4 +1,4 @@
-package Service;
+package service;
 
 public enum TaskType {
     TASK,

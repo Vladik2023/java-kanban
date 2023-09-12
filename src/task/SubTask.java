@@ -1,6 +1,6 @@
-package Task;
+package task;
 
-import Service.TaskType;
+import service.TaskType;
 
 public class SubTask extends Task {
 
