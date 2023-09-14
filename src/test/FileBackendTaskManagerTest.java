@@ -7,6 +7,7 @@ import task.Epic;
 import task.Task;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,6 +34,10 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskM
     public void testSaveAndLoadFromFile() {
         Task task1 = new Task("Задача 1", "Описание 1");
         Task task2 = new Task("Задача 2", "Описание 2");
+        task1.setStartTime(new Date());
+        task1.setDuration(0);
+        task2.setStartTime(new Date());
+        task2.setDuration(0);
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
