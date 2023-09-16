@@ -149,6 +149,7 @@ public class InMemoryTaskManager implements TaskManager {
         prioritizedTasks.remove(saved);
         prioritizedTasks.add(subTask);
     }
+
     private boolean isTaskIntersecting(Task task1, Task task2) {
         Date startTime1 = task1.getStartTime();
         Date endTime1 = task1.getEndTime();

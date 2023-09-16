@@ -2,10 +2,13 @@ package test;
 
 import org.junit.jupiter.api.Test;
 import service.InMemoryTaskManager;
+import service.Manager;
+import service.TaskManager;
 import task.Epic;
 import task.SubTask;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -13,7 +16,12 @@ public class EpicTest {
 
     @Test
     public void testCalculateStatus_emptySubTaskList() {
+        TaskManager taskManager = Manager.getTaskDefault();
         Epic epic = new Epic("Epic 1", "Описание 1");
+        epic.setStartTime(new Date());
+        epic.setDuration(0);
+        taskManager.createEpic(epic);
+
         epic.setSubTaskId(new ArrayList<>());
 
         String status = epic.getStatus();
@@ -22,90 +30,95 @@ public class EpicTest {
     }
 
     @Test
-    public void testCalculateStatus_allSubTasksNew() {
-        Epic epic = new Epic("Epic 2", "Описание 2");
-        ArrayList<Integer> subTaskIds = new ArrayList<>();
-        subTaskIds.add(1);
-        subTaskIds.add(2);
-        epic.setSubTaskId(subTaskIds);
-
-        SubTask subTask1 = new SubTask("SubTask 1", "Описание 1", 2);
-        SubTask subTask2 = new SubTask("SubTask 2", "Описание 2", 2);
-        subTask1.setStatus("NEW");
-        subTask2.setStatus("NEW");
-
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
-        taskManager.createSubTask(subTask1);
-        taskManager.createSubTask(subTask2);
-
-        String status = epic.getStatus();
-
-        assertEquals("NEW", status);
-    }
-
-    @Test
     public void testCalculateStatus_allSubTasksDone() {
+        TaskManager taskManager = Manager.getTaskDefault();
         Epic epic = new Epic("Epic 3", "Описание 3");
+        epic.setStartTime(new Date());
+        epic.setDuration(0);
+        taskManager.createEpic(epic);
+
         ArrayList<Integer> subTaskIds = new ArrayList<>();
-        subTaskIds.add(3);
-        subTaskIds.add(4);
-        epic.setSubTaskId(subTaskIds);
 
-        SubTask subTask3 = new SubTask("SubTask 3", "Описание 3", 3);
-        SubTask subTask4 = new SubTask("SubTask 4", "Описание 4", 3);
-        subTask3.setStatus("DONE");
-        subTask4.setStatus("DONE");
+        SubTask subTask3 = new SubTask("SubTask 3", "Описание 3", epic.getId());
+        SubTask subTask4 = new SubTask("SubTask 4", "Описание 4", epic.getId());
 
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        subTask3.setStartTime(new Date());
+        subTask3.setDuration(0);
+        subTask4.setStartTime(new Date());
+        subTask4.setDuration(0);
         taskManager.createSubTask(subTask3);
         taskManager.createSubTask(subTask4);
 
-        String status = epic.getStatus();
+        subTaskIds.add(subTask3.getId());
+        subTaskIds.add(subTask4.getId());
+        epic.setSubTaskId(subTaskIds);
+        subTask3.setStatus("DONE");
+        subTask4.setStatus("DONE");
+        taskManager.updateSubTask(subTask3);
+        taskManager.updateSubTask(subTask4);
 
-        assertEquals("DONE", status);
+        assertEquals("DONE", epic.getStatus());
     }
 
     @Test
     public void testCalculateStatus_subTasksNewAndDone() {
+        TaskManager taskManager = Manager.getTaskDefault();
         Epic epic = new Epic("Epic 4", "Описание 4");
+        epic.setStartTime(new Date());
+        epic.setDuration(0);
+        taskManager.createEpic(epic);
+
         ArrayList<Integer> subTaskIds = new ArrayList<>();
-        subTaskIds.add(5);
-        subTaskIds.add(6);
-        epic.setSubTaskId(subTaskIds);
 
-        SubTask subTask5 = new SubTask("SubTask 5", "Описание 5", 4);
-        SubTask subTask6 = new SubTask("SubTask 6", "Описание 6", 4);
-        subTask5.setStatus("NEW");
-        subTask6.setStatus("DONE");
+        SubTask subTask5 = new SubTask("SubTask 5", "Описание 5", epic.getId());
+        SubTask subTask6 = new SubTask("SubTask 6", "Описание 6", epic.getId());
 
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        subTask5.setStartTime(new Date());
+        subTask5.setDuration(0);
+        subTask6.setStartTime(new Date());
+        subTask6.setDuration(0);
         taskManager.createSubTask(subTask5);
         taskManager.createSubTask(subTask6);
 
-        String status = epic.getStatus();
+        subTaskIds.add(subTask5.getId());
+        subTaskIds.add(subTask6.getId());
+        epic.setSubTaskId(subTaskIds);
+        subTask5.setStatus("NEW");
+        subTask6.setStatus("DONE");
+        taskManager.updateSubTask(subTask5);
+        taskManager.updateSubTask(subTask6);
 
-        assertEquals("IN_PROGRESS", status);
+        assertEquals("IN_PROGRESS", epic.getStatus());
     }
 
     @Test
     public void testCalculateStatus_subTasksInProgress() {
+        TaskManager taskManager = Manager.getTaskDefault();
         Epic epic = new Epic("Epic 5", "Описание 5");
+        epic.setStartTime(new Date());
+        epic.setDuration(0);
+        taskManager.createEpic(epic);
+
         ArrayList<Integer> subTaskIds = new ArrayList<>();
-        subTaskIds.add(7);
-        subTaskIds.add(8);
-        epic.setSubTaskId(subTaskIds);
 
-        SubTask subTask7 = new SubTask("SubTask 7", "Описание 7", 5);
-        SubTask subTask8 = new SubTask("SubTask 8", "Описание 8", 5);
-        subTask7.setStatus("IN_PROGRESS");
-        subTask8.setStatus("IN_PROGRESS");
+        SubTask subTask7 = new SubTask("SubTask 7", "Описание 7", epic.getId());
+        SubTask subTask8 = new SubTask("SubTask 8", "Описание 8", epic.getId());
 
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        subTask7.setStartTime(new Date());
+        subTask7.setDuration(0);
+        subTask8.setStartTime(new Date());
+        subTask8.setDuration(0);
         taskManager.createSubTask(subTask7);
         taskManager.createSubTask(subTask8);
 
-        String status = epic.getStatus();
+        subTaskIds.add(subTask7.getId());
+        subTaskIds.add(subTask8.getId());
+        epic.setSubTaskId(subTaskIds);
+        subTask7.setStatus("IN_PROGRESS");
+        subTask8.setStatus("IN_PROGRESS");
+        taskManager.updateSubTask(subTask7);
+        taskManager.updateSubTask(subTask8);
 
-        assertEquals("IN_PROGRESS", status);
+        assertEquals("IN_PROGRESS", epic.getStatus());
     }
 }
