@@ -4,6 +4,7 @@ import service.Manager;
 import service.TaskManager;
 import service.TaskType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -11,9 +12,9 @@ import java.util.Date;
 public class Epic extends Task {
 
     private ArrayList<Integer> subTaskId;
-    private Integer duration;
-    private Date startTime;
-    private Date endTime;
+    private Long duration;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description);
@@ -21,32 +22,31 @@ public class Epic extends Task {
         this.subTaskId = new ArrayList<>();
     }
 
-    public Epic(String name, String description, Integer duration, Date startTime) {
+    public Epic(String name, String description, Long duration, LocalDateTime startTime) {
         super(name, description);
         this.type = TaskType.EPIC;
         this.subTaskId = new ArrayList<>();
         this.duration = duration;
         this.startTime = startTime;
-        this.endTime = calculateEndTime();
     }
 
-    public Integer getDuration() {
+    public Long getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(Long duration) {
         this.duration = duration;
     }
 
-    public Date getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
@@ -62,26 +62,7 @@ public class Epic extends Task {
         subTaskId.add(id);
     }
 
-    private Date calculateEndTime() {
-        Date latestEndTime = null;
-        for (Integer subTaskId : subTaskId) {
-            TaskManager taskManager = Manager.getTaskDefault();
-            Task subTask = taskManager.getSubTaskById(subTaskId);
-            Date subTaskEndTime = subTask.getEndTime();
-            if (latestEndTime == null || subTaskEndTime.after(latestEndTime)) {
-                latestEndTime = subTaskEndTime;
-            }
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startTime);
-        calendar.add(Calendar.MINUTE, duration);
-        Date epicEndTime = calendar.getTime();
-        if (latestEndTime != null && latestEndTime.after(epicEndTime)) {
-            return latestEndTime;
-        } else {
-            return epicEndTime;
-        }
-    }
+
 
     @Override
     public String toString() {

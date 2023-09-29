@@ -18,8 +18,8 @@ public class EpicTest {
     public void testCalculateStatus_emptySubTaskList() {
         TaskManager taskManager = Manager.getTaskDefault();
         Epic epic = new Epic("Epic 1", "Описание 1");
-        epic.setStartTime(new Date());
-        epic.setDuration(0);
+
+
         taskManager.createEpic(epic);
 
         epic.setSubTaskId(new ArrayList<>());
@@ -33,8 +33,7 @@ public class EpicTest {
     public void testCalculateStatus_allSubTasksDone() {
         TaskManager taskManager = Manager.getTaskDefault();
         Epic epic = new Epic("Epic 3", "Описание 3");
-        epic.setStartTime(new Date());
-        epic.setDuration(0);
+
         taskManager.createEpic(epic);
 
         ArrayList<Integer> subTaskIds = new ArrayList<>();
@@ -42,10 +41,8 @@ public class EpicTest {
         SubTask subTask3 = new SubTask("SubTask 3", "Описание 3", epic.getId());
         SubTask subTask4 = new SubTask("SubTask 4", "Описание 4", epic.getId());
 
-        subTask3.setStartTime(new Date());
-        subTask3.setDuration(0);
-        subTask4.setStartTime(new Date());
-        subTask4.setDuration(0);
+
+
         taskManager.createSubTask(subTask3);
         taskManager.createSubTask(subTask4);
 
@@ -64,8 +61,7 @@ public class EpicTest {
     public void testCalculateStatus_subTasksNewAndDone() {
         TaskManager taskManager = Manager.getTaskDefault();
         Epic epic = new Epic("Epic 4", "Описание 4");
-        epic.setStartTime(new Date());
-        epic.setDuration(0);
+
         taskManager.createEpic(epic);
 
         ArrayList<Integer> subTaskIds = new ArrayList<>();
@@ -73,10 +69,7 @@ public class EpicTest {
         SubTask subTask5 = new SubTask("SubTask 5", "Описание 5", epic.getId());
         SubTask subTask6 = new SubTask("SubTask 6", "Описание 6", epic.getId());
 
-        subTask5.setStartTime(new Date());
-        subTask5.setDuration(0);
-        subTask6.setStartTime(new Date());
-        subTask6.setDuration(0);
+
         taskManager.createSubTask(subTask5);
         taskManager.createSubTask(subTask6);
 
@@ -95,8 +88,7 @@ public class EpicTest {
     public void testCalculateStatus_subTasksInProgress() {
         TaskManager taskManager = Manager.getTaskDefault();
         Epic epic = new Epic("Epic 5", "Описание 5");
-        epic.setStartTime(new Date());
-        epic.setDuration(0);
+
         taskManager.createEpic(epic);
 
         ArrayList<Integer> subTaskIds = new ArrayList<>();
@@ -104,10 +96,7 @@ public class EpicTest {
         SubTask subTask7 = new SubTask("SubTask 7", "Описание 7", epic.getId());
         SubTask subTask8 = new SubTask("SubTask 8", "Описание 8", epic.getId());
 
-        subTask7.setStartTime(new Date());
-        subTask7.setDuration(0);
-        subTask8.setStartTime(new Date());
-        subTask8.setDuration(0);
+
         taskManager.createSubTask(subTask7);
         taskManager.createSubTask(subTask8);
 

@@ -18,7 +18,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskM
     @Override
     protected FileBackendTaskManager createTaskManager() {
         File file = new File(TEST_FILE_PATH);
-        return new FileBackendTaskManager(file);
+        return new FileBackendTaskManager();
     }
 
     @BeforeEach
@@ -34,10 +34,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskM
     public void testSaveAndLoadFromFile() {
         Task task1 = new Task("Задача 1", "Описание 1");
         Task task2 = new Task("Задача 2", "Описание 2");
-        task1.setStartTime(new Date());
-        task1.setDuration(0);
-        task2.setStartTime(new Date());
-        task2.setDuration(0);
+
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
@@ -68,7 +65,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskM
     @Test
     public void testSaveAndLoadWithEmptyTaskList() {
         File file = new File("testTasks.csv");
-        FileBackendTaskManager fileManager = new FileBackendTaskManager(file);
+        FileBackendTaskManager fileManager = new FileBackendTaskManager();
 
         fileManager.save();
 
@@ -82,7 +79,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskM
     @Test
     public void testSaveAndLoadWithEpicWithoutSubtasks() {
         File file = new File("testTasks.csv");
-        FileBackendTaskManager fileManager = new FileBackendTaskManager(file);
+        FileBackendTaskManager fileManager = new FileBackendTaskManager();
 
         Epic epic = new Epic("Эпик 1", "Описание 1");
         fileManager.createEpic(epic);
@@ -100,7 +97,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskM
     @Test
     public void testSaveAndLoadWithEmptyHistory() {
         File file = new File("testTasks.csv");
-        FileBackendTaskManager fileManager = new FileBackendTaskManager(file);
+        FileBackendTaskManager fileManager = new FileBackendTaskManager();
 
         fileManager.save();
 

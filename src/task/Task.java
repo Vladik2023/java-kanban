@@ -2,6 +2,7 @@ package task;
 
 import service.TaskType;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -13,8 +14,8 @@ public class Task {
     protected String description;
     protected String status;
     protected TaskType type;
-    protected Integer duration;
-    protected Date startTime;
+    protected Long duration;
+    protected LocalDateTime startTime;
     private static int count = 0;
 
 
@@ -26,7 +27,7 @@ public class Task {
         this.type = TaskType.TASK;
     }
 
-    public Task(String name, String description, Integer duration, Date startTime) {
+    public Task(String name, String description, Long duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = "NEW";
@@ -35,28 +36,33 @@ public class Task {
         this.duration = duration;
         this.startTime = startTime;
     }
+    public Task(String name, String description, Long duration, LocalDateTime startTime, String status) {
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+        this.startTime = startTime;
+        this.status = status;
+        this.type = TaskType.TASK;
+    }
 
-    public Integer getDuration() {
+    public Long getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(Long duration) {
         this.duration = duration;
     }
 
-    public Date getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startTime);
-        calendar.add(Calendar.MINUTE, duration);
-        return calendar.getTime();
+    public LocalDateTime getEndTime() {
+        return startTime != null ? startTime.plusMinutes(duration) : null;
     }
 
     public TaskType getType() {

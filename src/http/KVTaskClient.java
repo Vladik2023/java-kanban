@@ -1,5 +1,7 @@
 package http;
 
+import http.RequestFailedException;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -7,40 +9,67 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class KVTaskClient {
-    private final String serverUrl;
+    private final String url;
+    private final HttpClient httpClient;
     private final String apiToken;
-    private final HttpClient client;
 
-    public KVTaskClient(String serverUrl) throws IOException, InterruptedException {
-        this.serverUrl = serverUrl;
-        this.client = HttpClient.newHttpClient();
-        this.apiToken = register();
+    public KVTaskClient(String url) {
+        this.httpClient = HttpClient.newHttpClient();
+        this.url = url;
+        this.apiToken = register(url);
     }
 
-    private String register() throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + "/register"))
-                .GET()
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body();
+    private String register(String url) {
+        try {
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(url + "/register"))
+                    .build();
+
+            HttpResponse<String> httpResponse = this.httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (httpResponse.statusCode() == 200) {
+                return httpResponse.body();
+            } else {
+                throw new RequestFailedException("Запрос не обработан, код состояния - " + httpResponse.statusCode());
+            }
+        } catch (InterruptedException | IOException e) {
+            throw new RequestFailedException("Ошибка в обработке запроса" + e.getMessage());
+        }
     }
 
-    public void put(String key, String json) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + "/save/" + key + "?API_TOKEN=" + apiToken))
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-        client.send(request, HttpResponse.BodyHandlers.ofString());
+    public void save(String key, String value) {
+        try {
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(value))
+                    .uri(URI.create(url + "/save/" + key + "?API_TOKEN=" + apiToken))
+                    .build();
+
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (httpResponse.statusCode() != 200) {
+                throw new RequestFailedException("Запрос не обработан, код состояния - " + httpResponse.statusCode());
+            }
+        } catch (InterruptedException | IOException e) {
+            throw new RequestFailedException("Ошибка в обработке запроса" + e.getMessage());
+        }
     }
 
-    public String load(String key) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + "/load/" + key + "?API_TOKEN=" + apiToken))
-                .GET()
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body();
+    public String load(String key) {
+        try {
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(url + "/load/" + key + "?API_TOKEN=" + apiToken))
+                    .build();
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            if (httpResponse.statusCode() == 200) {
+                return httpResponse.body();
+            } else {
+                throw new RequestFailedException("Запрос не обработан, код состояния - " + httpResponse.statusCode());
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RequestFailedException("Ошибка в обработке запроса" + e.getMessage());
+        }
     }
 
 }

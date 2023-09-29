@@ -1,14 +1,14 @@
 package http;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Постман: https://www.getpostman.com/collections/a83b61d9e1c81c10575c
@@ -27,33 +27,39 @@ public class KVServer {
         server.createContext("/load", this::load);
     }
 
-    private void load(HttpExchange h) throws IOException {
+    public KVServer(String host, int port) throws IOException {
+        apiToken = generateApiToken();
+        server = HttpServer.create(new InetSocketAddress(host, port), 0);
+        server.createContext("/register", this::register);
+        server.createContext("/save", this::save);
+        server.createContext("/load", this::load);
+    }
+
+    public static void main(String[] args) throws IOException {
+        KVServer kvServer = new KVServer();
+        kvServer.start();
+    }
+
+    private void load(HttpExchange h) {
         try {
-            System.out.println("\n/load");
             if (!hasAuth(h)) {
                 System.out.println("Запрос неавторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
                 h.sendResponseHeaders(403, 0);
                 return;
             }
-            if ("GET".equals(h.getRequestMethod())) {
-                String key = h.getRequestURI().getPath().substring("/load/".length());
-                if (key.isEmpty()) {
-                    System.out.println("Key для загрузки пустой. key указывается в пути: /load/{key}");
-                    h.sendResponseHeaders(400, 0);
-                    return;
+            if (h.getRequestMethod().equals("GET")) {
+                String[] partPath = h.getRequestURI().getPath().replaceFirst("/load", "")
+                        .split("/");
+                String result = data.get(partPath[1]);
+                if (!result.isEmpty()) {
+                    sendText(h, result);
                 }
-                String value = data.get(key);
-                if (value == null) {
-                    System.out.println("Значение для ключа " + key + " не найдено");
-                    h.sendResponseHeaders(404, 0);
-                    return;
-                }
-                System.out.println("Значение для ключа " + key + ": " + value);
-                sendText(h, value);
             } else {
                 System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             h.close();
         }
@@ -114,6 +120,7 @@ public class KVServer {
     }
 
     public void stop() {
+        System.out.println("Остановлен сервер на порту " + PORT);
         server.stop(0);
     }
 

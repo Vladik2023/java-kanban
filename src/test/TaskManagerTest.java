@@ -10,6 +10,7 @@ import task.Epic;
 import task.SubTask;
 import task.Task;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -56,8 +57,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createEpic(epic);
 
         SubTask subTask = new SubTask("Подзадача 1", "Описание 1", epic.getId());
-        subTask.setStartTime(new Date());
-        subTask.setDuration(0);
+
         SubTask createdSubTask = taskManager.createSubTask(subTask);
 
         assertNotNull(createdSubTask);
@@ -75,10 +75,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         SubTask subTask1 = new SubTask("Подзадача 1", "Описание 1", epic.getId());
         SubTask subTask2 = new SubTask("Подзадача 2", "Описание 2", epic.getId());
-        subTask1.setStartTime(new Date());
-        subTask1.setDuration(0);
-        subTask2.setStartTime(new Date());
-        subTask2.setDuration(0);
+
         taskManager.createSubTask(subTask1);
         taskManager.createSubTask(subTask2);
 
@@ -124,8 +121,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createEpic(epic);
 
         SubTask subTask = new SubTask("Подзадача 1", "Описание 1", epic.getId());
-        subTask.setStartTime(new Date());
-        subTask.setDuration(0);
+
         SubTask createdSubTask = taskManager.createSubTask(subTask);
 
         SubTask retrievedSubTask = (SubTask) taskManager.getSubTaskById(createdSubTask.getId());
@@ -142,10 +138,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void testGetAllTasks() {
         Task task1 = new Task("Задача 1", "Описание 1");
         Task task2 = new Task("Задача 2", "Описание 2");
-        task1.setStartTime(new Date());
-        task1.setDuration(0);
-        task2.setStartTime(new Date());
-        task2.setDuration(0);
+
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
@@ -179,10 +172,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         SubTask subTask1 = new SubTask("Подзадача 1", "Описание 1", epic.getId());
         SubTask subTask2 = new SubTask("Подзадача 2", "Описание 2", epic.getId());
-        subTask1.setStartTime(new Date());
-        subTask1.setDuration(0);
-        subTask2.setStartTime(new Date());
-        subTask2.setDuration(0);
+
         taskManager.createSubTask(subTask1);
         taskManager.createSubTask(subTask2);
 
@@ -198,10 +188,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void testGetHistory() {
         Task task1 = new Task("Задача 1", "Описание 1");
         Task task2 = new Task("Задача 2", "Описание 2");
-        task1.setStartTime(new Date());
-        task1.setDuration(0);
-        task2.setStartTime(new Date());
-        task2.setDuration(0);
+
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         taskManager.getTaskById(task1.getId());
@@ -261,8 +248,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createEpic(epic);
 
         SubTask subTask = new SubTask("Подзадача 1", "Описание 1", epic.getId());
-        subTask.setStartTime(new Date());
-        subTask.setDuration(0);
+
         SubTask createdSubTask = taskManager.createSubTask(subTask);
 
         createdSubTask.setName("Обновленная подзадача");
@@ -311,8 +297,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createEpic(epic);
 
         SubTask subTask = new SubTask("Подзадача 1", "Описание 1", epic.getId());
-        subTask.setStartTime(new Date());
-        subTask.setDuration(0);
+
         SubTask createdSubTask = taskManager.createSubTask(subTask);
 
         taskManager.deleteSubTaskById(createdSubTask.getId());
@@ -326,10 +311,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void testDeleteAllTask() {
         Task task1 = new Task("Задача 1", "Описание 1");
         Task task2 = new Task("Задача 2", "Описание 2");
-        task1.setStartTime(new Date());
-        task1.setDuration(0);
-        task2.setStartTime(new Date());
-        task2.setDuration(0);
+
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
@@ -363,10 +345,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         SubTask subTask1 = new SubTask("Подзадача 1", "Описание 1", epic.getId());
         SubTask subTask2 = new SubTask("Подзадача 2", "Описание 2", epic.getId());
-        subTask1.setStartTime(new Date());
-        subTask1.setDuration(0);
-        subTask2.setStartTime(new Date());
-        subTask2.setDuration(0);
+
         taskManager.createSubTask(subTask1);
         taskManager.createSubTask(subTask2);
 
@@ -410,33 +389,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertNull(subTask);
     }
 
-    @Test
-    public void testCreateTaskWithDurationAndStartTime() {
-        TaskManager taskManager = Manager.getTaskDefault();
-        Task task = new Task("Task with duration and start time", "Description", 60, new Date());
-        Task createdTask = taskManager.createTask(task);
-        assertNotNull(createdTask);
-        assertNotNull(createdTask.getId());
-        assertEquals("Task with duration and start time", createdTask.getName());
-        assertEquals("Description", createdTask.getDescription());
-        assertEquals(60, createdTask.getDuration().intValue());
-        assertNotNull(createdTask.getStartTime());
-        assertNotNull(createdTask.getEndTime());
-    }
 
-    @Test
-    public void testCreateEpicWithDurationAndStartTime() {
-        TaskManager taskManager = Manager.getTaskDefault();
-        Epic epic = new Epic("Epic with duration and start time", "Description", 120, new Date());
-        Epic createdEpic = taskManager.createEpic(epic);
-        assertNotNull(createdEpic);
-        assertNotNull(createdEpic.getId());
-        assertEquals("Epic with duration and start time", createdEpic.getName());
-        assertEquals("Description", createdEpic.getDescription());
-        assertEquals(120, createdEpic.getDuration().intValue());
-        assertNotNull(createdEpic.getStartTime());
-        assertNotNull(createdEpic.getEndTime());
-    }
 
     public static class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 

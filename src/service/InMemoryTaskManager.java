@@ -4,10 +4,11 @@ import task.Task;
 import task.Epic;
 import task.SubTask;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-
+    protected int newId = 0;
     protected HashMap<Integer, Task> taskStorage = new HashMap<>();
     protected HashMap<Integer, Epic> epicStorage = new HashMap<>();
     protected HashMap<Integer, SubTask> subTaskStorage = new HashMap<>();
@@ -151,13 +152,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private boolean isTaskIntersecting(Task task1, Task task2) {
-        Date startTime1 = task1.getStartTime();
-        Date endTime1 = task1.getEndTime();
-        Date startTime2 = task2.getStartTime();
-        Date endTime2 = task2.getEndTime();
+        LocalDateTime startTime1 = task1.getStartTime();
+        LocalDateTime endTime1 = task1.getEndTime();
+        LocalDateTime startTime2 = task2.getStartTime();
+        LocalDateTime endTime2 = task2.getEndTime();
 
         return startTime1 != null && startTime2 != null && endTime1 != null && endTime2 != null &&
-                startTime1.before(endTime2) && endTime1.after(startTime2);
+                startTime1.isBefore(endTime2) && endTime1.isAfter(startTime2);
     }
 
     private String checkStatusEpic(int id){

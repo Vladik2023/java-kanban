@@ -12,6 +12,9 @@ import java.util.List;
 public class FileBackendTaskManager extends InMemoryTaskManager{
     private File file;
 
+    public FileBackendTaskManager() {
+        this.file = file;
+    }
     public FileBackendTaskManager(File file) {
         this.file = file;
     }
@@ -47,7 +50,7 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
     }
 
     public static FileBackendTaskManager loadFromFile(File file) {
-        FileBackendTaskManager taskManager = new FileBackendTaskManager(file);
+        FileBackendTaskManager taskManager = new FileBackendTaskManager();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -230,24 +233,5 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
         save();
     }
 
-    public static void main(String[] args) {
-        FileBackendTaskManager fileManager = new FileBackendTaskManager(new File("saveTasks2.csv"));
-        fileManager.createTask(new Task("task1", "Купить автомобиль"));
-        fileManager.createEpic(new Epic("new Epic1", "Новый Эпик"));
-        fileManager.createSubTask(new SubTask("New Subtask", "Подзадача", 2));
-        fileManager.createSubTask(new SubTask("New Subtask2", "Подзадача2", 2));
-        fileManager.getTaskById(1);
-        fileManager.getEpicById(2);
-        fileManager.getSubTaskById(3);
-//        System.out.println(fileManager.getAllTasks());
-//        System.out.println(fileManager.getAllEpic());
-//        System.out.println(fileManager.getAllSubTask());
-        System.out.println("История просмотров" + fileManager.getHistory());
-        System.out.println("\n\n" + "new" + "\n\n");
-        FileBackendTaskManager fileBackedTasksManager = loadFromFile(new File("saveTasks2.csv"));
-//        System.out.println(fileManager.getAllTasks());
-//        System.out.println(fileManager.getAllEpic());
-//        System.out.println(fileManager.getAllSubTask());
-        System.out.println("История просмотров" + fileBackedTasksManager.getHistory());
-    }
+
 }
