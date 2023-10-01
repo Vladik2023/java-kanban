@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 public class HttpTaskServer {
-    private static final int PORT = 8080;
+    private static final int PORT = 8082;
     private static final int RESPONSE_CODE_SUCCESS_NO_CONTENT = 204;
     private final HttpServer server;
     private final FileBackendTaskManager taskManager;
@@ -117,7 +117,8 @@ public class HttpTaskServer {
                         taskManager.updateTask(task);
                         httpExchange.sendResponseHeaders(RESPONSE_CODE_SUCCESS_NO_CONTENT, -1);
                     } else {
-                        response = gson.toJson(taskManager.createTask(task));
+                        Task createdTask = taskManager.createTask(task);
+                        response = gson.toJson(createdTask);
                         sendText(httpExchange, response);
                     }
                     return;

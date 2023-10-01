@@ -12,8 +12,8 @@ import java.util.Date;
 public class Epic extends Task {
 
     private ArrayList<Integer> subTaskId;
-    private Long duration;
-    private LocalDateTime startTime;
+
+
     private LocalDateTime endTime;
 
     public Epic(String name, String description) {

@@ -1,15 +1,19 @@
-import service.Manager;
-import service.TaskManager;
-import task.Epic;
+import http.KVServer;
+
+
+import java.io.IOException;
 
 public class Main {
-
     public static void main(String[] args) {
-        TaskManager taskManager = Manager.getTaskDefault();
-        Epic epic = new Epic("Epic 1", "d1");
-        taskManager.createEpic(epic);
-        taskManager.getEpicById(epic.getId());
+        KVServer kvServer;
+        try {
+            kvServer = new KVServer("localhost", 8080);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        kvServer.start();
 
-        System.out.println(taskManager.getHistory());
+
+        kvServer.stop();
     }
 }

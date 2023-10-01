@@ -17,13 +17,13 @@ public class InMemoryTaskManager implements TaskManager {
             Comparator.nullsLast(Comparator.naturalOrder())));
 
     @Override
-    public Task createTask(Task task){
+    public Task createTask(Task task) {
         for (Task existingTask : prioritizedTasks) {
             if (isTaskIntersecting(existingTask, task)) {
                 throw new IllegalArgumentException("Задача пересекается с другой задачей: " + existingTask.getName());
             }
         }
-        int id = task.getId();
+        int id = ++newId;
         task.setId(id);
         taskStorage.put(id, task);
         prioritizedTasks.add(task);
