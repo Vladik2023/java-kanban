@@ -251,7 +251,7 @@ class HttpTaskServerTest {
     void updateEpic() throws IOException, InterruptedException {
         createDefaultTasks();
         Task epic = manager.getEpicById(2);
-        epic.setName("Epic - update"); // Изменить имя эпика
+        epic.setName("Epic - update");
         String body = gson.toJson(epic);
         HttpResponse<String> response = httpClient.send(prepareHttpRequestPost(body, "/epic"),
                 HttpResponse.BodyHandlers.ofString());
