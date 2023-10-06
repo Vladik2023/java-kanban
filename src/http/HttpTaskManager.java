@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class HttpTaskManager extends FileBackendTaskManager {
 
-    public static final String KEY_TASK = "task";
+    public static final String KEY_TASK = "ru/yandex/finalTest8/task";
     public static final String KEY_HISTORY = "history";
     public static final String KEY_EPIC = "epic";
     public static final String KEY_SUBTASK = "subtask";

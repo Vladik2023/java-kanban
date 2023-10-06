@@ -1,6 +1,4 @@
 package service;
-import task.Epic;
-import task.SubTask;
 import task.Task;
 
 import java.util.ArrayList;
@@ -50,12 +48,14 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
+        if (!taskMap.containsKey(id)){
+            return;
+        }
         CustomLinkedList.Node node = taskMap.get(id);
         if (node != null) {
             removeNode(node);
             taskMap.remove(id);
         }
-
     }
 
     private class CustomLinkedList {

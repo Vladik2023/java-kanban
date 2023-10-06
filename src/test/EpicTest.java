@@ -1,14 +1,12 @@
 package test;
 
 import org.junit.jupiter.api.Test;
-import service.InMemoryTaskManager;
 import service.Manager;
 import service.TaskManager;
 import task.Epic;
 import task.SubTask;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,7 +16,6 @@ public class EpicTest {
     public void testCalculateStatus_emptySubTaskList() {
         TaskManager taskManager = Manager.getTaskDefault();
         Epic epic = new Epic("Epic 1", "Описание 1");
-
 
         taskManager.createEpic(epic);
 

@@ -29,7 +29,7 @@ public class HistoryManagerTest {
 
     @Test
     public void testAddTaskToEmptyHistory() {
-        Task task = new Task("Задача 1", "Описание 1");
+        Task task = new Task(1, "Задача 1", "Описание 1");
 
         historyManager.addTask(task);
 
@@ -42,7 +42,7 @@ public class HistoryManagerTest {
 
     @Test
     public void testRemoveTaskFromEmptyHistory() {
-        Task task = new Task("Задача 1", "Описание 1");
+        Task task = new Task(1,"Задача 1", "Описание 1");
 
         historyManager.remove(task.getId());
 
@@ -54,7 +54,7 @@ public class HistoryManagerTest {
 
     @Test
     public void testAddDuplicateTaskToHistory() {
-        Task task = new Task("Задача 1", "Описание 1");
+        Task task = new Task(1,"Задача 1", "Описание 1");
 
         historyManager.addTask(task);
         historyManager.addTask(task);
@@ -68,8 +68,8 @@ public class HistoryManagerTest {
 
     @Test
     public void testRemoveTaskFromBeginningOfHistory() {
-        Task task1 = new Task("Задача 1", "Описание 1");
-        Task task2 = new Task("Задача 2", "Описание 2");
+        Task task1 = new Task(1,"Задача 1", "Описание 1");
+        Task task2 = new Task(2,"Задача 2", "Описание 2");
         historyManager.addTask(task1);
         historyManager.addTask(task2);
 
@@ -84,9 +84,9 @@ public class HistoryManagerTest {
 
     @Test
     public void testRemoveTaskFromMiddleOfHistory() {
-        Task task1 = new Task("Задача 1", "Описание 1");
-        Task task2 = new Task("Задача 2", "Описание 2");
-        Task task3 = new Task("Задача 3", "Описание 3");
+        Task task1 = new Task(1,"Задача 1", "Описание 1");
+        Task task2 = new Task(2,"Задача 2", "Описание 2");
+        Task task3 = new Task(3,"Задача 3", "Описание 3");
         historyManager.addTask(task1);
         historyManager.addTask(task2);
         historyManager.addTask(task3);
@@ -103,8 +103,8 @@ public class HistoryManagerTest {
 
     @Test
     public void testRemoveTaskFromEndOfHistory() {
-        Task task1 = new Task("Задача 1", "Описание 1");
-        Task task2 = new Task("Задача 2", "Описание 2");
+        Task task1 = new Task(1,"Задача 1", "Описание 1");
+        Task task2 = new Task(2,"Задача 2", "Описание 2");
         historyManager.addTask(task1);
         historyManager.addTask(task2);
 

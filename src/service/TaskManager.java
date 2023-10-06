@@ -1,8 +1,8 @@
 package service;
 
-import task.Task;
 import task.Epic;
 import task.SubTask;
+import task.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public interface TaskManager {
 
     ArrayList<Task> getAllTasks();
 
-    ArrayList<Epic> getAllEpic();
+    List<Epic> getAllEpic();
 
     ArrayList<SubTask> getAllSubTask();
     List<Task> getHistory();

@@ -1,20 +1,20 @@
 package service;
 
-import task.Task;
 import task.Epic;
 import task.SubTask;
+import task.Task;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FileBackendTaskManager extends InMemoryTaskManager{
+public class FileBackendTaskManager extends InMemoryTaskManager {
     private File file;
 
     public FileBackendTaskManager() {
-        this.file = file;
     }
+
     public FileBackendTaskManager(File file) {
         this.file = file;
     }
@@ -134,14 +134,14 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
     public Epic createEpic(Epic epic) {
         Epic result = super.createEpic(epic);
         save();
-        return  result;
+        return result;
     }
 
     @Override
     public SubTask createSubTask(SubTask subTask) {
         SubTask result = super.createSubTask(subTask);
         save();
-        return  result;
+        return result;
     }
 
     @Override
@@ -232,6 +232,4 @@ public class FileBackendTaskManager extends InMemoryTaskManager{
         super.deleteAllSubTask();
         save();
     }
-
-
 }

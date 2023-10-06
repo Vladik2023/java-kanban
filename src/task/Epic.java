@@ -1,18 +1,12 @@
 package task;
-import service.InMemoryTaskManager;
-import service.Manager;
-import service.TaskManager;
 import service.TaskType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class Epic extends Task {
 
     private ArrayList<Integer> subTaskId;
-
 
     private LocalDateTime endTime;
 
@@ -20,30 +14,6 @@ public class Epic extends Task {
         super(name, description);
         this.type = TaskType.EPIC;
         this.subTaskId = new ArrayList<>();
-    }
-
-    public Epic(String name, String description, Long duration, LocalDateTime startTime) {
-        super(name, description);
-        this.type = TaskType.EPIC;
-        this.subTaskId = new ArrayList<>();
-        this.duration = duration;
-        this.startTime = startTime;
-    }
-
-    public Long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Long duration) {
-        this.duration = duration;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
     }
 
     public LocalDateTime getEndTime() {
@@ -62,16 +32,14 @@ public class Epic extends Task {
         subTaskId.add(id);
     }
 
-
-
     @Override
     public String toString() {
         return "Epic{" +
                 "subTaskId=" + subTaskId +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status='" + status + '\'' +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", id=" + getId() +
+                ", status='" + getStatus() + '\'' +
                 '}';
     }
 }

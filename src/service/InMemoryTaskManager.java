@@ -1,8 +1,8 @@
 package service;
 
-import task.Task;
 import task.Epic;
 import task.SubTask;
+import task.Task;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -18,29 +18,34 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task createTask(Task task) {
+        task.setId(++newId);
+        task.setStatus("NEW");
+        task.setType(TaskType.TASK);
         for (Task existingTask : prioritizedTasks) {
             if (isTaskIntersecting(existingTask, task)) {
                 throw new IllegalArgumentException("Задача пересекается с другой задачей: " + existingTask.getName());
             }
         }
-        int id = ++newId;
-        task.setId(id);
-        taskStorage.put(id, task);
+        taskStorage.put(task.getId(), task);
         prioritizedTasks.add(task);
         return task;
     }
 
     @Override
-    public Epic createEpic(Epic epic){
-        int id = epic.getId();
-        epic.setId(id);
-        epicStorage.put(id, epic);
+    public Epic createEpic(Epic epic) {
+        epic.setId(++newId);
+        epic.setStatus("NEW");
+        epic.setType(TaskType.EPIC);
+        epicStorage.put(epic.getId(), epic);
         prioritizedTasks.add(epic);
         return epic;
     }
 
     @Override
-    public SubTask createSubTask(SubTask subTask){
+    public SubTask createSubTask(SubTask subTask) {
+        subTask.setId(++newId);
+        subTask.setStatus("NEW");
+        subTask.setType(TaskType.SUBTASK);
         for (Task existingTask : prioritizedTasks) {
             if (isTaskIntersecting(existingTask, subTask)) {
                 throw new IllegalArgumentException("Подзадача пересекается с другой задачей: " + existingTask.getName());
@@ -54,13 +59,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Integer> getSubTaskByEpic(int epicId){
-        ArrayList<Integer>  result = new ArrayList<>();
+    public ArrayList<Integer> getSubTaskByEpic(int epicId) {
+        ArrayList<Integer> result = new ArrayList<>();
         for (SubTask value : subTaskStorage.values()) {
-                if(value.getEpicId() == epicId){
-                    result.add(value.getId());
-                    getSubTaskById(value.getId());
-                }
+            if (value.getEpicId() == epicId) {
+                result.add(value.getId());
+                getSubTaskById(value.getId());
+            }
         }
         return result;
     }
@@ -75,46 +80,46 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getEpicById(int id){
+    public Task getEpicById(int id) {
         historyManager.addTask(epicStorage.get(id));
         return epicStorage.get(id);
     }
 
     @Override
-    public Task getSubTaskById(int id){
+    public Task getSubTaskById(int id) {
         historyManager.addTask(subTaskStorage.get(id));
         return subTaskStorage.get(id);
     }
 
     @Override
-    public ArrayList<Task> getAllTasks(){
+    public ArrayList<Task> getAllTasks() {
         return new ArrayList(taskStorage.values());
     }
 
     @Override
-    public ArrayList<Epic> getAllEpic(){
-        return new ArrayList(epicStorage.values());
+    public List<Epic> getAllEpic() {
+        return new ArrayList<>(epicStorage.values());
     }
 
     @Override
-    public ArrayList<SubTask> getAllSubTask(){
+    public ArrayList<SubTask> getAllSubTask() {
         return new ArrayList(subTaskStorage.values());
     }
 
     @Override
-    public List<Task> getHistory(){
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 
     @Override
-    public void updateTask(Task task){
+    public void updateTask(Task task) {
         for (Task existingTask : prioritizedTasks) {
             if (!existingTask.equals(task) && isTaskIntersecting(existingTask, task)) {
                 throw new IllegalArgumentException("Задача пересекается с другой задачей: " + existingTask.getName());
             }
         }
         Task saved = taskStorage.get(task.getId());
-        if (saved == null){
+        if (saved == null) {
             return;
         }
         taskStorage.put(task.getId(), task);
@@ -123,9 +128,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic(Epic epic){
+    public void updateEpic(Epic epic) {
         Epic saved = epicStorage.get(epic.getId());
-        if (saved == null){
+        if (saved == null) {
             return;
         }
         saved.setName(epic.getName());
@@ -135,14 +140,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubTask(SubTask subTask){
+    public void updateSubTask(SubTask subTask) {
         for (Task existingTask : prioritizedTasks) {
             if (!existingTask.equals(subTask) && isTaskIntersecting(existingTask, subTask)) {
                 throw new IllegalArgumentException("Подзадача пересекается с другой задачей: " + existingTask.getName());
             }
         }
         Task saved = subTaskStorage.get(subTask.getId());
-        if (saved == null){
+        if (saved == null) {
             return;
         }
         subTaskStorage.put(subTask.getId(), subTask);
@@ -161,36 +166,38 @@ public class InMemoryTaskManager implements TaskManager {
                 startTime1.isBefore(endTime2) && endTime1.isAfter(startTime2);
     }
 
-    private String checkStatusEpic(int id){
+    private String checkStatusEpic(int id) {
         boolean isNew = false;
         boolean isDone = false;
         for (Integer subTaskId : getSubTaskByEpic(id)) {
-            if(subTaskStorage.get(subTaskId).getStatus().equals("IN_PROGRESS")){
+            if (subTaskStorage.get(subTaskId).getStatus().equals("IN_PROGRESS")) {
                 return "IN_PROGRESS";
-            }else if(subTaskStorage.get(subTaskId).getStatus().equals("NEW")){
+            } else if (subTaskStorage.get(subTaskId).getStatus().equals("NEW")) {
                 isNew = true;
-            }   else if(subTaskStorage.get(subTaskId).getStatus().equals("DONE")){
+            } else if (subTaskStorage.get(subTaskId).getStatus().equals("DONE")) {
                 isDone = true;
             }
         }
-        if(isDone && isNew){
+        if (isDone && isNew) {
             return "IN_PROGRESS";
-        }else if(!isNew && isDone){
+        } else if (!isNew && isDone) {
             return "DONE";
-        }else{
+        } else {
             return "NEW";
         }
     }
 
     @Override
-    public void deleteTaskById(int id){
+    public void deleteTaskById(int id) {
         taskStorage.remove(id);
         historyManager.remove(id);
     }
 
     @Override
-    public void deleteEpicById(int id){
-
+    public void deleteEpicById(int id) {
+        if (!epicStorage.containsKey(id)) {
+            return;
+        }
         ArrayList<Integer> removeSubTask = new ArrayList<>(epicStorage.get(id).getSubTaskId());
         for (Integer subTaskId : removeSubTask) {
             subTaskStorage.remove(subTaskId);
@@ -201,7 +208,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteSubTaskById(int id){
+    public void deleteSubTaskById(int id) {
         SubTask subTask = subTaskStorage.get(id);
         subTaskStorage.remove(id);
         historyManager.remove(id);
@@ -211,7 +218,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteAllTask(){
+    public void deleteAllTask() {
         for (Integer id : taskStorage.keySet()) {
             historyManager.remove(id);
         }
@@ -219,7 +226,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteAllEpic(){
+    public void deleteAllEpic() {
         for (Integer id : epicStorage.keySet()) {
             historyManager.remove(id);
         }
@@ -231,7 +238,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void deleteAllSubTask(){
+    public void deleteAllSubTask() {
         for (Integer id : subTaskStorage.keySet()) {
             historyManager.remove(id);
         }

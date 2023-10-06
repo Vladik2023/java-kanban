@@ -2,16 +2,16 @@ package test;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import http.HttpTaskServer;
-import http.KVServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import http.HttpTaskServer;
+import http.KVServer;
 import service.FileBackendTaskManager;
+import service.Manager;
 import task.Epic;
 import task.SubTask;
 import task.Task;
-import service.Manager;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HttpTaskServerTest {
     public static final String URL = "http://localhost:8082/tasks";
@@ -63,12 +63,12 @@ class HttpTaskServerTest {
     }
 
     private void createDefaultTasks() {
-        Task task = new Task("Task - name", "Task - description", 10L,
+        Task task = new Task("Task - name", "Task - description", 5L,
                 LocalDateTime.now().minusMinutes(30));
         manager.createTask(task);
         Epic epic = new Epic("Epic - name", "Epic - description");
         epic = manager.createEpic(epic);
-        SubTask subTask = new SubTask("Subtask - name", "SubTask - description", 15L,
+        SubTask subTask = new SubTask("Subtask - name", "SubTask - description", 5L,
                 LocalDateTime.now().minusMinutes(10), epic.getId());
         subTask = manager.createSubTask(subTask);
         manager.getTaskById(task.getId());
@@ -174,7 +174,6 @@ class HttpTaskServerTest {
                 HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
         Task subTask = manager.getSubTaskById(3);
-        assertNotNull(subTask);
         assertEquals(subTask.toString(), gson.fromJson(response.body(), SubTask.class).toString());
     }
 
@@ -221,21 +220,22 @@ class HttpTaskServerTest {
 
     @Test
     void createTask() throws IOException, InterruptedException {
-        String body = "{\"name\": \"task - name\", \"description\": \"task - description\"}";
+        String body = "{\"name\": \"main.java.task - name\", \"description\": \"main.java.task - description\"}";
         HttpResponse<String> response = httpClient.send(prepareHttpRequestPost(body, "/task"),
                 HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        assertEquals(manager.getAllTasks().get(0).toString(), gson.fromJson(response.body(), Task.class).toString());
+        assertEquals(manager.getTaskById(4).toString(), gson.fromJson(response.body(), Task.class).toString());
     }
 
     @Test
     void updateTask() throws IOException, InterruptedException {
-        String body = "{\"id\": \"1\", \"name\": \"task - update\", \"description\": \"task - update\"}";
+        String body = "{\"id\": \"1\", \"name\": \"main.java.task - update\", \"description\": \"main.java.task - update\", " +
+                "\"type\": \"TASK\", \"status\": \"NEW\"}";
         HttpResponse<String> response = httpClient.send(prepareHttpRequestPost(body, "/task"),
                 HttpResponse.BodyHandlers.ofString());
         assertEquals(204, response.statusCode());
-        assertEquals(manager.getAllTasks().get(0).getName(), "task - update");
-        assertEquals(manager.getAllTasks().get(0).getDescription(), "task - update");
+        assertEquals(manager.getAllTasks().get(0).getName(), "main.java.task - update");
+        assertEquals(manager.getAllTasks().get(0).getDescription(), "main.java.task - update");
     }
 
     @Test
@@ -244,14 +244,15 @@ class HttpTaskServerTest {
         HttpResponse<String> response = httpClient.send(prepareHttpRequestPost(body, "/epic"),
                 HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
-        assertEquals(manager.getAllEpic().get(0).toString(), gson.fromJson(response.body(), Epic.class).toString());
+        assertEquals(manager.getEpicById(4).toString(), gson.fromJson(response.body(), Epic.class).toString());
     }
 
     @Test
     void updateEpic() throws IOException, InterruptedException {
-        createDefaultTasks();
+        //createDefaultTasks();
         Task epic = manager.getEpicById(2);
         epic.setName("Epic - update");
+        epic.setDescription("epic - update");
         String body = gson.toJson(epic);
         HttpResponse<String> response = httpClient.send(prepareHttpRequestPost(body, "/epic"),
                 HttpResponse.BodyHandlers.ofString());
@@ -262,7 +263,7 @@ class HttpTaskServerTest {
 
     @Test
     void createSubTask() throws IOException, InterruptedException {
-        String body = "{\"name\": \"subTask - name\", \"description\": \"subTask - description\", \"parentId\":\"2\"}";
+        String body = "{\"name\": \"subTask - name\", \"description\": \"subTask - description\", \"epicId\":\"2\"}";
         HttpResponse<String> response = httpClient.send(prepareHttpRequestPost(body, "/subtask"),
                 HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
@@ -272,7 +273,7 @@ class HttpTaskServerTest {
     @Test
     void updateSubtask() throws IOException, InterruptedException {
         String body = "{\"id\": \"3\", \"name\": \"subTask - update\", \"description\": \"subTask - update\""
-                + ", \"parentId\":\"2\", \"status\":\"IN_PROGRESS\"}";
+                + ", \"epicId\":\"2\", \"status\":\"IN_PROGRESS\", \"type\":\"SUBTASK\"}";
         HttpResponse<String> response = httpClient.send(prepareHttpRequestPost(body, "/subtask"),
                 HttpResponse.BodyHandlers.ofString());
         assertEquals(204, response.statusCode());

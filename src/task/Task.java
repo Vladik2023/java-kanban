@@ -3,27 +3,35 @@ package task;
 import service.TaskType;
 
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
 
 public class Task {
+    private Integer id;
+    private String name;
+    private String status;
+    private String description;
 
-    protected Integer id;
-    protected String name;
-    protected String description;
-    protected String status;
+
+    public void setType(TaskType type) {
+        this.type = type;
+    }
+
     protected TaskType type;
-    protected Long duration;
-    protected LocalDateTime startTime;
-    private static int count = 0;
+    private Long duration;
+    private LocalDateTime startTime;
 
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
+        this.type = TaskType.TASK;
         this.status = "NEW";
-        this.id = generateId();
+    }
+
+    public Task(Integer id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = "NEW";
         this.type = TaskType.TASK;
     }
 
@@ -31,11 +39,11 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = "NEW";
-        this.id = generateId();
         this.type = TaskType.TASK;
         this.duration = duration;
         this.startTime = startTime;
     }
+
     public Task(String name, String description, Long duration, LocalDateTime startTime, String status) {
         this.name = name;
         this.description = description;
@@ -67,10 +75,6 @@ public class Task {
 
     public TaskType getType() {
         return type;
-    }
-
-    private Integer generateId() {
-        return ++count;
     }
 
     public String getName() {
@@ -108,29 +112,12 @@ public class Task {
     @Override
     public String toString() {
         return "Task{" +
-                "id=" + id +
+                "id=" + this.id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
+                ", description='" + description + '\'' +
+                ", type=" + type +
+                ", startTime=" + startTime +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        Task other = (Task) obj;
-        return Objects.equals(id, other.id) &&
-                Objects.equals(name, other.name) &&
-                Objects.equals(description, other.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description);
     }
 }

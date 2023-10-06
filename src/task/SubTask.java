@@ -8,7 +8,6 @@ public class SubTask extends Task {
 
     private int epicId;
 
-
     public SubTask(String name, String description, Long duration, LocalDateTime startTime, int epicId) {
         super(name, description, duration, startTime);
         this.epicId = epicId;
@@ -28,10 +27,10 @@ public class SubTask extends Task {
     public String toString() {
         return "SubTask{" +
                 "epicId=" + epicId +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status='" + status + '\'' +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", id=" + getId() +
+                ", status='" + getStatus() + '\'' +
                 '}';
     }
 

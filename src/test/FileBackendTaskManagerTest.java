@@ -3,31 +3,23 @@ package test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.FileBackendTaskManager;
+import service.Manager;
 import task.Epic;
 import task.Task;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskManager> {
 
-    private static final String TEST_FILE_PATH = "testTasks.csv";
-
-    @Override
-    protected FileBackendTaskManager createTaskManager() {
-        File file = new File(TEST_FILE_PATH);
-        return new FileBackendTaskManager();
-    }
+    private static final File TEST_FILE_PATH = new File("testTasks.csv");
 
     @BeforeEach
-    public void setUp() {
-        File file = new File(TEST_FILE_PATH);
-        if (file.exists()) {
-            file.delete();
-        }
-        taskManager = createTaskManager();
+    public void setUpFileManager() {
+        TEST_FILE_PATH.deleteOnExit();
+        taskManager = Manager.getFileBackendTaskManagerDefault(TEST_FILE_PATH);
     }
 
     @Test
@@ -40,21 +32,20 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskM
 
         taskManager.save();
 
-        FileBackendTaskManager loadedTaskManager = FileBackendTaskManager.loadFromFile(new File(TEST_FILE_PATH));
+        FileBackendTaskManager loadedTaskManager = FileBackendTaskManager.loadFromFile(TEST_FILE_PATH);
 
         List<Task> tasks = loadedTaskManager.getAllTasks();
 
         assertNotNull(tasks);
         assertEquals(2, tasks.size());
-        assertTrue(tasks.contains(task1));
-        assertTrue(tasks.contains(task2));
+        assertEquals(taskManager.getAllTasks().toString(), tasks.toString());
     }
 
     @Test
     public void testSaveAndLoadFromFileWithEmptyFile() {
         taskManager.save();
 
-        FileBackendTaskManager loadedTaskManager = FileBackendTaskManager.loadFromFile(new File(TEST_FILE_PATH));
+        FileBackendTaskManager loadedTaskManager = FileBackendTaskManager.loadFromFile(TEST_FILE_PATH);
 
         List<Task> tasks = loadedTaskManager.getAllTasks();
 
@@ -64,12 +55,12 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskM
 
     @Test
     public void testSaveAndLoadWithEmptyTaskList() {
-        File file = new File("testTasks.csv");
-        FileBackendTaskManager fileManager = new FileBackendTaskManager();
+
+        FileBackendTaskManager fileManager = new FileBackendTaskManager(TEST_FILE_PATH);
 
         fileManager.save();
 
-        FileBackendTaskManager loadedManager = FileBackendTaskManager.loadFromFile(file);
+        FileBackendTaskManager loadedManager = FileBackendTaskManager.loadFromFile(TEST_FILE_PATH);
 
         List<Task> loadedTasks = loadedManager.getAllTasks();
         assertNotNull(loadedTasks);
@@ -78,33 +69,26 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackendTaskM
 
     @Test
     public void testSaveAndLoadWithEpicWithoutSubtasks() {
-        File file = new File("testTasks.csv");
-        FileBackendTaskManager fileManager = new FileBackendTaskManager();
-
         Epic epic = new Epic("Эпик 1", "Описание 1");
-        fileManager.createEpic(epic);
+        taskManager.createEpic(epic);
 
-        fileManager.save();
-
-        FileBackendTaskManager loadedManager = FileBackendTaskManager.loadFromFile(file);
+        FileBackendTaskManager loadedManager = FileBackendTaskManager.loadFromFile(TEST_FILE_PATH);
 
         List<Epic> loadedTasks = loadedManager.getAllEpic();
+
         assertNotNull(loadedTasks);
         assertEquals(1, loadedTasks.size());
-        assertTrue(loadedTasks.contains(epic));
+        assertEquals(loadedManager.getAllEpic().toString(), List.of(epic).toString());
     }
 
     @Test
-    public void testSaveAndLoadWithEmptyHistory() {
-        File file = new File("testTasks.csv");
-        FileBackendTaskManager fileManager = new FileBackendTaskManager();
+    void loadFromFileBadFilePatch() {
+        assertThrows(IllegalArgumentException.class, () -> FileBackendTaskManager.loadFromFile(new File("123")));
+    }
 
-        fileManager.save();
-
-        FileBackendTaskManager loadedManager = FileBackendTaskManager.loadFromFile(file);
-
-        List<Task> loadedHistory = loadedManager.getHistory();
-        assertNotNull(loadedHistory);
-        assertTrue(loadedHistory.isEmpty());
+    @Test
+    void saveBadFilePatch() {
+        FileBackendTaskManager fileBackedTaskManager = new FileBackendTaskManager(new File("src/test"));
+        assertThrows(IllegalArgumentException.class, fileBackedTaskManager::save);
     }
 }
